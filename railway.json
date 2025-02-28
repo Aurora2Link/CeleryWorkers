@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.up.railway.app/railway.schema.json",
+  "build": {
+    "nixpacksPlan": {
+      "phases": {
+        "setup": {
+          "nixPkgs": ["..."]
+        }
+      }
+    }
+  },
+  "deploy": {
+    "startCommand": "celery -A main.celery worker --loglevel=info"
+  }
+}
