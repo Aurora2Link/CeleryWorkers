@@ -10,6 +10,6 @@
     }
   },
   "deploy": {
-    "startCommand": "celery -A main.celery worker --loglevel=info"
+    "startCommand": "python celery_worker.py"
   }
 }
