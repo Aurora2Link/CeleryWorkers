@@ -1,6 +1,7 @@
 from celery import Celery
 import os
 import redis
+import json
 import time
 
 # Configurar Redis
@@ -11,8 +12,10 @@ redis_client = redis.Redis.from_url(REDIS_URL, decode_responses=True)
 celery = Celery("tasks", broker=REDIS_URL, backend=REDIS_URL)
 
 @celery.task
-def process_message(data):
+def process_message(data_str):
     try:
+        # Convertir la cadena JSON de vuelta a un objeto JSON
+        data = json.loads(data_str)
         Phone_number = data['entry'][0]['changes'][0]['value']['messages'][0]['from']
         Message = data['entry'][0]['changes'][0]['value']['messages'][0]['text']['body']
         print(f"Mensaje recibido de {Phone_number}: {Message}")
@@ -23,8 +26,8 @@ def process_message(data):
 
 def fetch_and_process_messages():
     while True:
-        _, data = redis_client.brpop("message_queue")
-        process_message.delay(data)
+        _, data_str = redis_client.brpop("message_queue")
+        process_message.delay(data_str)
         time.sleep(1)  # Evitar sobrecargar el worker
 
 if __name__ == "__main__":
